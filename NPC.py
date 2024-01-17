@@ -51,7 +51,7 @@ class Npc:
         self.type = 'npc'
 
         #NPC Characteristics
-        self.health = stats['health']    
+        self.health = stats['health']
         self.speed = stats['speed']
         self.OG_speed = self.speed
         self.mind = stats['mind']
@@ -59,7 +59,7 @@ class Npc:
         self.OG_state = self.state
         self.atcktype = stats['atcktype']
         self.name = stats['name']
-        
+
         if stats['dmg'] != 3.1415:
             self.dmg = stats['dmg']
         else:
@@ -72,7 +72,7 @@ class Npc:
         if SETTINGS.current_level == 0 and SETTINGS.levels_list == SETTINGS.glevels_list:
             self.health = int(self.health * 0.8)
             self.dmg = int(self.dmg * 0.8)
-            
+
         #Make late levels harder >:)
         elif SETTINGS.current_level > 4 and SETTINGS.levels_list == SETTINGS.glevels_list:
             self.health += int(SETTINGS.current_level / 3)
@@ -97,14 +97,14 @@ class Npc:
         self.texture_path = texture # Used for creating new NPCS
         self.texture = pygame.image.load(texture).convert_alpha()
         self.texturerect = self.texture.get_rect()
-        
+
         self.stand_texture = [self.texture.subsurface(0,0,64,128).convert_alpha(), self.texture.subsurface(64,0,64,128).convert_alpha(), self.texture.subsurface(128,0,64,128).convert_alpha(), self.texture.subsurface(192,0,64,128).convert_alpha(), self.texture.subsurface(256,0,64,128).convert_alpha(), self.texture.subsurface(320,0,64,128).convert_alpha(), self.texture.subsurface(384,0,64,128).convert_alpha(), self.texture.subsurface(448,0,64,128).convert_alpha()]
         self.front_texture = [self.texture.subsurface(0,128,64,128).convert_alpha(), self.texture.subsurface(64,128,64,128).convert_alpha(), self.texture.subsurface(128,128,64,128).convert_alpha(), self.texture.subsurface(192,128,64,128).convert_alpha(), self.texture.subsurface(256,128,64,128).convert_alpha(), self.texture.subsurface(320,128,64,128).convert_alpha(), self.texture.subsurface(384,128,64,128).convert_alpha(), self.texture.subsurface(448,128,64,128).convert_alpha(), self.texture.subsurface(512,128,64,128).convert_alpha(), self.texture.subsurface(576,128,64,128).convert_alpha()]
         self.frontright_texture = [self.texture.subsurface(0,256,64,128).convert_alpha(), self.texture.subsurface(64,256,64,128).convert_alpha(), self.texture.subsurface(128,256,64,128).convert_alpha(), self.texture.subsurface(192,256,64,128).convert_alpha(), self.texture.subsurface(256,256,64,128).convert_alpha(), self.texture.subsurface(320,256,64,128).convert_alpha(), self.texture.subsurface(384,256,64,128).convert_alpha(), self.texture.subsurface(448,256,64,128).convert_alpha(), self.texture.subsurface(512,256,64,128).convert_alpha(), self.texture.subsurface(576,256,64,128).convert_alpha()]
         self.right_texture = [self.texture.subsurface(0,384,64,128).convert_alpha(), self.texture.subsurface(64,384,64,128).convert_alpha(), self.texture.subsurface(128,384,64,128).convert_alpha(), self.texture.subsurface(192,384,64,128).convert_alpha(), self.texture.subsurface(256,384,64,128).convert_alpha(), self.texture.subsurface(320,384,64,128).convert_alpha(), self.texture.subsurface(384,384,64,128).convert_alpha(), self.texture.subsurface(448,384,64,128).convert_alpha(), self.texture.subsurface(512,384,64,128).convert_alpha(), self.texture.subsurface(576,384,64,128).convert_alpha()]
         self.backright_texture = [self.texture.subsurface(0,512,64,128).convert_alpha(), self.texture.subsurface(64,512,64,128).convert_alpha(), self.texture.subsurface(128,512,64,128).convert_alpha(), self.texture.subsurface(192,512,64,128).convert_alpha(), self.texture.subsurface(256,512,64,128).convert_alpha(), self.texture.subsurface(320,512,64,128).convert_alpha(), self.texture.subsurface(384,512,64,128).convert_alpha(), self.texture.subsurface(448,512,64,128).convert_alpha(), self.texture.subsurface(512,512,64,128).convert_alpha(), self.texture.subsurface(576,512,64,128).convert_alpha()]
         self.back_texture = [self.texture.subsurface(0,640,64,128).convert_alpha(), self.texture.subsurface(64,640,64,128).convert_alpha(), self.texture.subsurface(128,640,64,128).convert_alpha(), self.texture.subsurface(192,640,64,128).convert_alpha(), self.texture.subsurface(256,640,64,128).convert_alpha(), self.texture.subsurface(320,640,64,128).convert_alpha(), self.texture.subsurface(384,640,64,128).convert_alpha(), self.texture.subsurface(448,640,64,128).convert_alpha(), self.texture.subsurface(512,640,64,128).convert_alpha(), self.texture.subsurface(576,640,64,128).convert_alpha()]
-        
+
         self.backleft_texture = []
         self.left_texture = []
         self.frontleft_texture = []
@@ -138,7 +138,7 @@ class Npc:
             self.update_timer += SETTINGS.dt
             if self.update_timer >= 2:
                 self.update_timer = 0
-            
+
         if not self.dead and self.health > 0 and not SETTINGS.player_states['dead']:
             self.render()
 
@@ -148,7 +148,7 @@ class Npc:
                 if self.mind == 'passive':
                     if self.state == 'idle':
                         self.idle()
-                        
+
                     elif self.state == 'patrolling':
                         self.move()
 
@@ -162,7 +162,7 @@ class Npc:
                                     self.path = []
                                     SOUND.play_sound(self.sounds['spot'], self.dist)
                                     self.state = 'attacking'
-                    
+
                     elif self.state == 'patrolling':
                         if self.player_in_view and not SETTINGS.ignore_player and self.detect_player():
                             self.path = []
@@ -171,7 +171,8 @@ class Npc:
                         elif self.dist <= SETTINGS.tile_size / 2 and not SETTINGS.ignore_player:
                             state = 'attacking'
                         else:
-                            self.move()
+                            #BUG TODO FIXME: self.move()
+                            ...
 
                     elif self.state == 'attacking':
                         self.attack()
@@ -189,7 +190,7 @@ class Npc:
                                     self.state = 'fleeing'
                             elif self.dist <= SETTINGS.tile_size / 2:
                                 state = 'attacking'
-                        
+
                     elif self.state == 'patrolling':
                         if self.player_in_view:
                             if not SETTINGS.ignore_player:
@@ -202,7 +203,7 @@ class Npc:
                                 state = 'attacking'
                         else:
                             self.move()
-                    
+
                     elif self.state == 'fleeing':
                         self.move()
 
@@ -217,7 +218,7 @@ class Npc:
             if self.face >= 360:
                 self.face -= 360
             self.render()
-            
+
         elif self.health <= 0 and not self.dead:
             self.animate('dying')
             self.render()
@@ -226,12 +227,12 @@ class Npc:
         '''== Draw the NPC =='''
         if self.dead:
             self.solid = False
-            
+
         xpos = SETTINGS.player_rect.centerx - self.rect.centerx
         ypos = SETTINGS.player_rect.centery - self.rect.centery
-        
+
         self.dist = math.sqrt(xpos*xpos + ypos*ypos)
-        
+
         if self.dist <= SETTINGS.render * SETTINGS.tile_size:
             theta = math.atan2(-ypos, xpos) % (2*math.pi)
             theta = math.degrees(theta)
@@ -246,7 +247,7 @@ class Npc:
 
             self.sprite.update_pos([self.rect.x, self.rect.y])
 
-            #What side is the NPC facing? (or not self.side is to make sure it finds the right angle from initialization) 
+            #What side is the NPC facing? (or not self.side is to make sure it finds the right angle from initialization)
             if theta <= 22.5 or theta >= 337.5:
                 self.player_in_view = True
                 if (self.side != 'front' and not self.dead and not self.hurting and not self.attacking and self.in_canvas) or not self.side:
@@ -264,7 +265,7 @@ class Npc:
                     else:
                         self.sprite.texture = self.stand_texture[7]
                 self.side = 'frontleft'
-                
+
             elif theta <= 112.5 and theta >= 67.5:
                 self.player_in_view = False
                 if (self.side != 'left' and not self.dead and not self.hurting and not self.attacking and self.in_canvas) or not self.side:
@@ -282,7 +283,7 @@ class Npc:
                     else:
                         self.sprite.texture = self.stand_texture[5]
                 self.side = 'backleft'
-                
+
             elif theta <= 202.5 and theta >= 157.5:
                 self.player_in_view = False
                 if (self.side != 'back' and not self.dead and not self.hurting and not self.attacking and self.in_canvas) or not self.side:
@@ -300,7 +301,7 @@ class Npc:
                     else:
                         self.sprite.texture = self.stand_texture[3]
                 self.side = 'backright'
-                
+
             elif theta <= 292.5 and theta >= 247.5:
                 self.player_in_view = False
                 if (self.side != 'right' and not self.dead and not self.hurting and not self.attacking and self.in_canvas) or not self.side:
@@ -333,7 +334,7 @@ class Npc:
             self.front_tile = (1, 0)
 
     def round_up(self, a):
-        return int(a + 0.5)            
+        return int(a + 0.5)
 
     def detect_player(self):
         '''== Is player visible from NPC position? ==\ndetect_player(self) -> boolean'''
@@ -372,15 +373,15 @@ class Npc:
             y += yinc
             mapx = self.round_up(x)
             mapy = self.round_up(y)
-            
+
             #If line of sight hits a wall
             next_wall = [tile for tile in self.dda_list if tile.map_pos == [mapx, mapy]]
-            
+
             if not next_wall:
                 break
             else:
                 next_wall = next_wall[0]
-            
+
             if SETTINGS.tile_visible[next_wall.ID]:
                 if next_wall.type != 'hdoor' and next_wall.type != 'vdoor':
                     break
@@ -406,7 +407,7 @@ class Npc:
             self.collide_list[-1] = SETTINGS.player
 
         tile_hit_list = [s for s in self.collide_list if self.rect.colliderect(s)]
-        
+
         for tile in tile_hit_list:
             if tile.solid:
                 if x > 0:
@@ -448,7 +449,7 @@ class Npc:
 
             if self.rect.colliderect(self.path[self.path_progress].rect) and self.path[self.path_progress] != self.path[-1]:
                 self.path_progress += 1
-                
+
             else:
                 #Move down
                 if self.rect.centery < self.path[self.path_progress].rect.centery:
@@ -465,7 +466,7 @@ class Npc:
                         moving_up = True
                     else:
                         self.rect.centery = self.path[self.path_progress].rect.centery
-                    
+
                 #Move right
                 if self.rect.centerx < self.path[self.path_progress].rect.centerx:
                     if abs(self.path[self.path_progress].rect.centerx - self.rect.centerx) >= self.speed * SETTINGS.dt:
@@ -489,7 +490,7 @@ class Npc:
                         self.face = 45
                     elif moving_left:
                         self.face = 135
-                        
+
                 elif moving_down:
                     if not moving_right and not moving_left:
                         self.face = 270
@@ -500,10 +501,10 @@ class Npc:
 
                 elif moving_left:
                     self.face = 180
-                    
+
                 elif moving_right:
                     self.face = 0
-                
+
         else:
             self.moving = False
             self.attack_move = False
@@ -529,7 +530,7 @@ class Npc:
                     player_tile = player_tile[0]
                 else:
                     player_tile = PATHFINDING.find_near_position(SETTINGS.player_map_pos)
-                    
+
                 if self.player_in_view:
                     if self.detect_player() and player_tile:
                         if ((SETTINGS.walkable_area.index(flee_pos) < SETTINGS.walkable_area.index(player_tile) + int(SETTINGS.current_level_size[0] / 5)) or (SETTINGS.walkable_area.index(flee_pos) > SETTINGS.walkable_area.index(player_tile) - int(SETTINGS.current_level_size[0] / 5))) and self.path == []:
@@ -588,7 +589,7 @@ class Npc:
                     if self.dist > SETTINGS.tile_size*0.7 and self.path == []:
                         self.path_progress = 0
                         self.path = PATHFINDING.pathfind(self.map_pos, SETTINGS.player_map_pos)
-                        
+
                     elif self.path != []:
                         try:
                             if self.path[-1].map_pos != SETTINGS.player_map_pos:
@@ -597,12 +598,12 @@ class Npc:
                                     self.path = PATHFINDING.pathfind(self.map_pos, SETTINGS.player_map_pos)
                                 elif random.randint(0,10) >= 8:
                                     self.path_progress = 0
-                                    self.path = PATHFINDING.pathfind(self.map_pos, SETTINGS.player_map_pos)                                    
+                                    self.path = PATHFINDING.pathfind(self.map_pos, SETTINGS.player_map_pos)
                             else:
                                 self.move()
                         except:
                             pass
-                
+
             elif self.atcktype == 'hitscan':
                 #Move somewhat close to player and change position after attacking
                 if self.dist <= SETTINGS.tile_size * self.range and (self.dist >= SETTINGS.tile_size * 1.5 or (SETTINGS.current_gun and SETTINGS.current_gun.guntype == 'melee')) and not self.attack_move:
@@ -634,8 +635,8 @@ class Npc:
                                     SOUND.play_sound(random.choice(self.sounds['damage']), self.dist)
                         else:
                             self.animate('attacking')
-                            
-                #Move away from player if too close            
+
+                #Move away from player if too close
                 elif self.dist < SETTINGS.tile_size * 1.5 and self.health <= 6:
                     if self.rect.centerx > SETTINGS.player_rect.centerx:
                         self.collide_update(self.speed, 0)
@@ -649,8 +650,8 @@ class Npc:
                     elif self.rect.centery < SETTINGS.player_rect.centery:
                         self.collide_update(0, -self.speed)
                         self.animate('walking')
-                    
-                        
+
+
                 else:
                     if not self.attack_move:
                         if self.dist >= SETTINGS.tile_size * 2.5 and self.path == []:
@@ -676,7 +677,7 @@ class Npc:
         if self.running_animation != animation:
             self.current_frame = 0
             self.running_animation = animation
-            
+
         #walk animation
         if animation == 'walking':
             if self.side == 'front':
@@ -701,7 +702,7 @@ class Npc:
                 self.timer = 0
                 if self.current_frame == len(self.front_texture)-1:
                     self.current_frame = 0
-        
+
         #die animation
         elif animation == 'dying':
             self.sprite.texture = self.die_texture[self.current_frame]
@@ -719,7 +720,7 @@ class Npc:
                 self.collide_update(-math.cos(math.radians(self.postheta))*self.knockback, 0)
                 self.collide_update(0, math.sin(math.radians(self.postheta))*self.knockback)
                 self.knockback = int(self.knockback*0.8)
-                
+
         #hurt animation
         elif animation == 'hurting':
             self.sprite.texture = self.hurt_texture[0]
@@ -734,7 +735,7 @@ class Npc:
                     if self.face >= 360:
                         self.face -= 360
                     self.face = min([0,90,180,270,359], key=lambda x:abs(x-self.face))
-        
+
         #attack animation
         elif animation == 'attacking':
             self.sprite.texture = self.hit_texture[self.current_frame]
@@ -796,4 +797,4 @@ class Npc:
 #    'npc_name' : 'name' -> Used for connecting to a sound pack.
 #    },
 
-    
+

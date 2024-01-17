@@ -1,6 +1,16 @@
 #This is the MAIN script of DUGA. This is where the main loop is located and this is where all resources are loaded.
 #All the classes will be located at the bottom of this script.
 
+# /// script
+# [project]
+# name = "DUGA"
+# version = "2024"
+# dependencies = [
+#  "pygame-ce",
+# ]
+# ///
+
+import asyncio
 import pygame
 import math
 import os
@@ -33,7 +43,10 @@ import TUTORIAL
 
 pygame.init()
 pygame.font.init()
-pygame.display.set_mode((1,1))
+
+pygame.display.set_mode((1024, 600), 0)
+
+
 
 #Load resources
 class Load:
@@ -59,7 +72,7 @@ class Load:
         #Load custom settings
         with open(os.path.join('data', 'settings.dat'), 'rb') as settings_file:
             settings = pickle.load(settings_file)
-            
+
         SETTINGS.fov = settings['fov']
         SETTINGS.sensitivity = settings['sensitivity']
         SETTINGS.volume = settings['volume']
@@ -94,7 +107,7 @@ class Load:
         if not os.stat(os.path.join('data', 'customLevels.dat')).st_size == 0:
             with open(os.path.join('data', 'customLevels.dat'), 'rb') as file:
                 custom_levels = pickle.load(file)
-                
+
             for level in custom_levels:
                 SETTINGS.clevels_list.append(LEVELS.Level(level))
 
@@ -104,7 +117,7 @@ class Load:
         for level in tutorial_levels:
             SETTINGS.tlevels_list.append(LEVELS.Level(level))
 
-    def load_new_level(self):    
+    def load_new_level(self):
         #Remove old level info
         SETTINGS.npc_list = []
         SETTINGS.all_items = []
@@ -113,7 +126,7 @@ class Load:
         SETTINGS.all_doors = []
         SETTINGS.all_solid_tiles = []
         SETTINGS.all_sprites = []
-        
+
         #Retrieve new level info
         self.get_canvas_size()
         gameMap.__init__(SETTINGS.levels_list[SETTINGS.current_level].array)
@@ -135,7 +148,7 @@ class Load:
             SETTINGS.player_states['black'] = True
 
         SETTINGS.player_states['title'] = True
-                
+
         SETTINGS.walkable_area = list(PATHFINDING.pathfind(SETTINGS.player_map_pos, SETTINGS.all_tiles[-1].map_pos))
         gameMap.move_inaccessible_entities()
         ENTITIES.spawn_npcs()
@@ -143,7 +156,7 @@ class Load:
 
 #Texturing
 class Texture:
-    
+
     def __init__(self, file_path, ID):
         self.slices = []
         self.texture = pygame.image.load(file_path).convert()
@@ -171,12 +184,14 @@ class Canvas:
             self.height = SETTINGS.canvas_target_height
             self.res_width = SETTINGS.canvas_actual_width
 
-        if SETTINGS.fullscreen:
-            self.window = pygame.display.set_mode((self.width, int(self.height+(self.height*0.15))), pygame.HWSURFACE + pygame.SCALED + pygame.NOFRAME + pygame.FULLSCREEN, 32, vsync=1)
-        else:
-            self.window = pygame.display.set_mode((self.width, int(self.height+(self.height*0.15))))
+#        if SETTINGS.fullscreen:
+#            self.window = pygame.display.set_mode((self.width, int(self.height+(self.height*0.15))), pygame.HWSURFACE + pygame.SCALED + pygame.NOFRAME + pygame.FULLSCREEN, 32, vsync=1)
+#        else:
+#            self.window = pygame.display.set_mode((self.width, int(self.height+(self.height*0.15))))
+        print("188: width, height", width, height)
+        self.window = pygame.display.set_mode((self.width, self.height), 0)
         self.canvas = pygame.Surface((self.width, self.height))
-        
+
         pygame.display.set_caption("DUGA")
 
 
@@ -225,7 +240,7 @@ def sort_atan(x):
         pos = SETTINGS.middle_ray_pos
     else:
         pos = SETTINGS.player_rect.center
-        
+
     #find the position on each tile that is closest to middle_ray_pos
     xpos = max(x.rect.left, min(pos[0], x.rect.right)) - SETTINGS.player_rect.centerx
     ypos = SETTINGS.player_rect.centery - max(x.rect.top, min(pos[1], x.rect.bottom))
@@ -242,7 +257,7 @@ def sort_atan(x):
         SETTINGS.end_angle = theta
 
     theta = abs(theta)
-    
+
     return(theta)
 
 def render_screen(canvas):
@@ -263,10 +278,10 @@ def render_screen(canvas):
             if sort_atan(tile) <= SETTINGS.fov:
                 if tile.distance < SETTINGS.render * SETTINGS.tile_size:
                     SETTINGS.rendered_tiles.append(tile)
-                            
+
             elif tile.distance <= SETTINGS.tile_size * 1.5:
                 SETTINGS.rendered_tiles.append(tile)
-                
+
 
     #Render all items in zbuffer
     for item in SETTINGS.zbuffer:
@@ -279,11 +294,11 @@ def render_screen(canvas):
                 canvas.blit(item.darkslice, (item.xpos, item.rect.y))
             if SETTINGS.shade:
                 canvas.blit(item.shade_slice, (item.xpos, item.rect.y))
-                
+
         else:
             if item.new_rect.right > 0 and item.new_rect.x < SETTINGS.canvas_actual_width and item.distance < (SETTINGS.render * SETTINGS.tile_size):
                 item.draw(canvas)
-                
+
     #Draw weapon if it is there
     if SETTINGS.current_gun:
         SETTINGS.current_gun.draw(gameCanvas.canvas)
@@ -320,7 +335,7 @@ def update_game():
             SETTINGS.current_level += 1
             SETTINGS.statistics['last levels'] += 1
             gameLoad.load_new_level()
-        
+
         elif (SETTINGS.current_level == len(SETTINGS.levels_list)-1 or SETTINGS.player_states['dead']) and gameLoad.timer < 4 and not SETTINGS.player_states['fade']:
             if not SETTINGS.player_states['dead'] and SETTINGS.current_level == len(SETTINGS.levels_list)-1 and text.string != 'YOU  WON':
                 text.update_string('YOU  WON')
@@ -331,7 +346,7 @@ def update_game():
                 gameLoad.timer = 0
             SETTINGS.game_won = True
             gameLoad.timer += SETTINGS.dt
-            
+
         #Reset for future playthroughs
         elif SETTINGS.game_won and gameLoad.timer >= 4:
             gameLoad.timer = 0
@@ -364,17 +379,15 @@ def calculate_statistics():
     #'last' statistics will be cleared when starting new game in menu.
     with open(os.path.join('data', 'statistics.dat'), 'wb') as saved_stats:
         pickle.dump(SETTINGS.statistics, saved_stats)
-    
+
 
 
 #Main loop
-def main_loop():
+async def main_loop():
     game_exit = False
     clock = pygame.time.Clock()
     logging.basicConfig(filename = os.path.join('data', 'CrashReport.log'), level=logging.WARNING)
 
-##    allfps = []
-    
     while not game_exit:
         SETTINGS.zbuffer = []
         if SETTINGS.play_seconds >= 60:
@@ -383,17 +396,10 @@ def main_loop():
         else:
             SETTINGS.play_seconds += SETTINGS.dt
 
-##        allfps.append(clock.get_fps())
-            
         for event in pygame.event.get():
             if event.type == pygame.QUIT or SETTINGS.quit_game:
                 game_exit = True
 
-##                b = 0
-##                for x in allfps:
-##                    b += x
-##                print(b/len(allfps))
-                
                 menuController.save_settings()
                 calculate_statistics()
                 pygame.quit()
@@ -402,7 +408,7 @@ def main_loop():
         try:
             #Music
             musicController.control_music()
-            
+
             if SETTINGS.menu_showing and menuController.current_type == 'main':
                 gameCanvas.window.fill(SETTINGS.WHITE)
                 menuController.control()
@@ -429,11 +435,11 @@ def main_loop():
 
             elif SETTINGS.menu_showing and menuController.current_type == 'game':
                 menuController.control()
-                
+
             else:
                 #Update logic
                 gamePlayer.control(gameCanvas.canvas)
-                
+
                 if SETTINGS.fov >= 100:
                     SETTINGS.fov = 100
                 elif SETTINGS.fov <= 10:
@@ -445,16 +451,16 @@ def main_loop():
                 #Render - Draw
                 gameRaycast.calculate()
                 gameCanvas.draw()
-                
-                
+
+
                 if SETTINGS.mode == 1:
                     render_screen(gameCanvas.canvas)
 
                     #BETA
                   #  beta.draw(gameCanvas.window)
-                
+
                 elif SETTINGS.mode == 0:
-                    gameMap.draw(gameCanvas.window)                
+                    gameMap.draw(gameCanvas.window)
                     gamePlayer.draw(gameCanvas.window)
 
                     for x in SETTINGS.raylines:
@@ -470,10 +476,11 @@ def main_loop():
                 update_game()
 
         except Exception as e:
+
+            sys.print_exception(e)
+
             menuController.save_settings()
             calculate_statistics()
-            logging.warning("DUGA has crashed. Please send this report to MaxwellSalmon, so he can fix it.")
-            logging.exception("Error message: ")
             pygame.quit()
             sys.exit(0)
 
@@ -483,7 +490,7 @@ def main_loop():
         SETTINGS.dt = delta_time / 1000.0
         SETTINGS.cfps = int(clock.get_fps())
         #pygame.display.set_caption(SETTINGS.caption % SETTINGS.cfps)
-
+        await asyncio.sleep(0)
        # allfps.append(clock.get_fps())
 
 #Probably temporary object init
@@ -523,5 +530,5 @@ if __name__ == '__main__':
     tutorialController = TUTORIAL.Controller()
 
     #Run at last
-    main_loop()
+    asyncio.run(main_loop())
 

@@ -20,7 +20,7 @@ class Map:
         for row in range(len(self.array)):
             for column in range(len(self.array[row])):
                 SETTINGS.all_tiles.append(Tile(self.array[row][column], [column*self.tile_size, row*self.tile_size], [column, row]))
-            
+
         for tile in SETTINGS.all_tiles:
             if SETTINGS.tile_solid[tile.ID]:
                 SETTINGS.all_solid_tiles.append(tile)
@@ -29,21 +29,21 @@ class Map:
 
         #Add a tile that is always outside the walkable area (air)
         SETTINGS.all_tiles.append(Tile(0, [column+1 * self.tile_size, row+1 * self.tile_size],[column+1, row+1]))
-                
+
     def draw(self, canvas):
         for tile in SETTINGS.all_solid_tiles:
             if SETTINGS.tile_visible[tile.ID]:
                 tile.draw(canvas)
 
-    def move_inaccessible_entities(self):      
+    def move_inaccessible_entities(self):
         wa = []
         for i in SETTINGS.walkable_area:
             if i.type != 'hdoor' and i.type != 'vdoor':
                 wa.append(i.map_pos)
-            
+
         move_items = [x for x in SETTINGS.levels_list[SETTINGS.current_level].items if list(x[0]) not in wa]
         move_npcs = [x for x in SETTINGS.levels_list[SETTINGS.current_level].npcs if list(x[0]) not in wa]
-        
+
         item_positions = [x[0] for x in SETTINGS.levels_list[SETTINGS.current_level].items if list(x[0]) in wa]
         npc_positions = [x[0] for x in SETTINGS.levels_list[SETTINGS.current_level].npcs if list(x[0]) in wa]
 
@@ -54,17 +54,19 @@ class Map:
         for pos in temp_possible_npc_positions:
             x = abs(SETTINGS.player_map_pos[0] - pos[0])
             y = abs(SETTINGS.player_map_pos[1] - pos[1])
-            
+
             if math.sqrt(x**2 + y**2) >= 8: #Length of vector between player and NPC
-                possible_npc_positions.append(pos)            
-        
+                possible_npc_positions.append(pos)
+
         for i in range(len(move_items)):
             #print("Moved item from ", move_items[i][0])
             index = SETTINGS.levels_list[SETTINGS.current_level].items.index(move_items[i]) #Get item index
             SETTINGS.levels_list[SETTINGS.current_level].items[index] = ((random.choice(possible_item_positions)), move_items[i][1]) #Choose new location for item
             possible_item_positions.remove(list(SETTINGS.levels_list[SETTINGS.current_level].items[index][0])) #Remove possible location
             #print("to ", SETTINGS.levels_list[SETTINGS.current_level].items[index][0])
-
+        if not len(possible_npc_positions):
+            print("68",__file__, "bug possible_npc_positions is empty")
+            return
         for i in range(len(move_npcs)):
             #print("Moved NPC from ", move_npcs[i][0])
             index = SETTINGS.levels_list[SETTINGS.current_level].npcs.index(move_npcs[i])
@@ -75,7 +77,7 @@ class Map:
         #print("This level has %s items and %s NPC's" % (len(SETTINGS.levels_list[SETTINGS.current_level].items), len(SETTINGS.levels_list[SETTINGS.current_level].npcs)))
 
 class Tile:
-    
+
     def __init__(self, ID, pos, map_pos):
         self.ID = ID
         #position in pixels
@@ -88,12 +90,12 @@ class Tile:
         #For doors opening
         self.state = None
         self.timer = 0
-        
+
         if self.type == 'sprite':
             current_number = len(SETTINGS.all_sprites)
             #Need some weird coordinates to make it centered.
             self.texture = SPRITES.Sprite(SETTINGS.tile_texture[self.ID], self.ID, (self.pos[0]+SETTINGS.tile_size/3, self.pos[1]+SETTINGS.tile_size/3), 'sprite')
-            
+
             self.rect = pygame.Rect(pos[0], pos[1], SETTINGS.tile_size/2, SETTINGS.tile_size/2)
 
         else:
@@ -103,7 +105,7 @@ class Tile:
             self.rect = self.texture.get_rect()
             self.rect.x = pos[0]
             self.rect.y = pos[1]
-            
+
             if self.type == 'vdoor' or self.type == 'hdoor':
                 self.open = 0
                 self.state = 'closed'
@@ -125,7 +127,7 @@ class Tile:
 
         if (self.state and self.state != 'closed') and called != ('npc',): #lol
             self.sesam_luk_dig_op()
-            
+
         return self.distance
 
     def sesam_luk_dig_op(self):
@@ -133,14 +135,14 @@ class Tile:
             self.open = SETTINGS.tile_size
         elif self.open < 0:
             self.open = 0
-            
+
         if self.state == 'closed':
             self.state = 'opening'
-            
+
         elif self.state == 'opening':
             if self.open == 0:
                 SOUND.play_sound(self.open_sound, self.distance)
-                
+
             if self.open < SETTINGS.tile_size:
                 self.open += SETTINGS.tile_size * SETTINGS.dt
             else:
@@ -155,7 +157,7 @@ class Tile:
                 for i in SETTINGS.npc_list:
                     if self.rect.colliderect(i.rect):
                         break
-                else:   
+                else:
                     self.state = 'closing'
                     self.solid = True
                     self.timer = 0
@@ -169,5 +171,5 @@ class Tile:
                 self.state = 'closed'
 
 
-            
-        
+
+
