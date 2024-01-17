@@ -44,7 +44,7 @@ import TUTORIAL
 pygame.init()
 pygame.font.init()
 
-pygame.display.set_mode((1024, 600), 0)
+window = pygame.display.set_mode((700, 640 ), 0)
 
 
 
@@ -189,7 +189,7 @@ class Canvas:
 #        else:
 #            self.window = pygame.display.set_mode((self.width, int(self.height+(self.height*0.15))))
         print("188: width, height", width, height)
-        self.window = pygame.display.set_mode((self.width, self.height), 0)
+        self.window = window #pygame.display.set_mode((self.width, self.height), 0)
         self.canvas = pygame.Surface((self.width, self.height))
 
         pygame.display.set_caption("DUGA")
@@ -515,7 +515,7 @@ if __name__ == '__main__':
 
     #Classes for later use
     gameMap = MAP.Map(SETTINGS.levels_list[SETTINGS.current_level].array)
-    gameCanvas = Canvas(SETTINGS.canvas_map_width, SETTINGS.canvas_map_height)
+    gameCanvas = Canvas( 700, 550 )
     gamePlayer = PLAYER.Player(SETTINGS.player_pos)
     gameRaycast = RAYCAST.Raycast(gameCanvas.canvas, gameCanvas.window)
     gameInv = INVENTORY.inventory({'bullet': 150, 'shell':25, 'ferromag' : 50})
